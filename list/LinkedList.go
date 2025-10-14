@@ -1,5 +1,11 @@
 package list
 
+import "fmt"
+
+type Data struct {
+	Data  int
+	Index int
+}
 type Node struct {
 	Data int
 	Next *Node
@@ -7,7 +13,7 @@ type Node struct {
 
 type SinglyLinkedList struct {
 	Head  *Node
-	count int
+	Count int
 }
 
 func NewNode(data int) *Node {
@@ -18,11 +24,34 @@ func (list *SinglyLinkedList) Append(Data int) {
 	node := NewNode(Data)
 	if list.Head == nil {
 		list.Head = node
+		list.Count += 1
 	} else {
-		last := list.Head.Next
-		for list.Head.Next != nil {
-			last = list.Head.Next
+		last := list.Head
+		for last.Next != nil {
+			last = last.Next
 		}
 		last.Next = node
+		list.Count += 1
+	}
+}
+
+func (list *SinglyLinkedList) Len() int {
+	return list.Count
+}
+
+func (list *SinglyLinkedList) RemoveAll() {
+	list.Head = nil
+	list.Count = 0
+}
+
+func (list *SinglyLinkedList) IsEmpty() bool {
+	return list.Head == nil
+}
+
+func (list *SinglyLinkedList) Display() {
+	current := list.Head
+	for current != nil {
+		fmt.Println(current.Data)
+		current = current.Next
 	}
 }
