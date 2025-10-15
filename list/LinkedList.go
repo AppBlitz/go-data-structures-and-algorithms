@@ -1,6 +1,9 @@
 package list
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Data struct {
 	Data  int
@@ -20,7 +23,7 @@ func NewNode(data int) *Node {
 	return &Node{Data: data, Next: nil}
 }
 
-func (list *SinglyLinkedList) Append(Data int) {
+func (list *SinglyLinkedList) AppendEnd(Data int) {
 	node := NewNode(Data)
 	if list.Head == nil {
 		list.Head = node
@@ -53,5 +56,50 @@ func (list *SinglyLinkedList) Display() {
 	for current != nil {
 		fmt.Println(current.Data)
 		current = current.Next
+	}
+}
+
+func (list *SinglyLinkedList) GetValueNodePosition(positionNode int) (int, error) {
+	var auxiliaryPosition int
+	if list.Len() < positionNode {
+		return -1, errors.New("the index not valid in the list ")
+	} else {
+		var counterIndexNode int
+		currentNode := list.Head
+		for currentNode != nil {
+			if counterIndexNode == positionNode {
+				auxiliaryPosition = currentNode.Data
+			}
+			counterIndexNode = counterIndexNode + 1
+			currentNode = currentNode.Next
+		}
+
+	}
+	return auxiliaryPosition, nil
+}
+
+// This function vericate if value exist in list
+// receive data
+func (list *SinglyLinkedList) VerificationValueExist(data int) bool {
+	currentNode := list.Head
+	var auxiliaryExistValue bool
+	for currentNode != nil {
+		if currentNode.Data == data {
+			auxiliaryExistValue = true
+			break
+		}
+		currentNode = currentNode.Next
+	}
+	return auxiliaryExistValue
+}
+
+func (list *SinglyLinkedList) AppendStart(data int) {
+	node := NewNode(data)
+	if list.Head == nil {
+		list.Head = node
+	} else {
+		nodeAuxHead := list.Head
+		list.Head = node
+		list.Head.Next = nodeAuxHead
 	}
 }
