@@ -8,8 +8,9 @@ import (
 // Node structure, where it has the value to wait
 // for and the reference to the next node
 type Node struct {
-	Data int
-	Next *Node
+	Data     int
+	Next     *Node
+	Previous *Node
 }
 
 // Type for create the singly linked list
