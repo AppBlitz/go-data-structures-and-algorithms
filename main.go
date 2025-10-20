@@ -90,19 +90,21 @@ func main() {
 
 	tree := lists.NewTree()
 
-	tree.Insert(50)
-	tree.Insert(30)
-	tree.Insert(70)
-	tree.Insert(20)
-	tree.Insert(40)
-	tree.Insert(60)
-	tree.Insert(80)
+	tree.InsertNode(50)
+	tree.InsertNode(30)
+	tree.InsertNode(70)
+	tree.InsertNode(20)
+	tree.InsertNode(40)
+	tree.InsertNode(60)
+	tree.InsertNode(80)
 
-	tree.PrintInorder() // 20 30 40 50 60 70 80
-	tree.Delete(70)
-	tree.PrintInorder() // 20 30 40 50 60 80
+	tree.PrintInorder()
+	tree.DeleteNode(70)
+	tree.PrintInorder()
 
 	fmt.Println("Height:", tree.Height())
 	fmt.Println("Nodes:", tree.CountNodes())
-	fmt.Println("Sum:", tree.Sum())
+	fmt.Println("Weight:", tree.Weight())
+
+	tree.DeleteSubTree() // Removes entire tree
 }
