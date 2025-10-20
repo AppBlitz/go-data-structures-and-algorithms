@@ -8,24 +8,27 @@ type CircularDoublyLinke struct {
 	Count int
 }
 
-func (circularDoublyLinked *CircularDoublyLinke) RemoveAll() {
-	if circularDoublyLinked.Head == nil {
+func (list *CircularDoublyLinke) RemoveAll() {
+	if list.Head == nil {
 		return
-	} else {
-		currentNode := circularDoublyLinked.Head
-		for {
-			next := currentNode.Next
-			currentNode.Previous = nil
-			currentNode.Next = nil
-			if next == circularDoublyLinked.Head {
-				break
-			}
-			currentNode = currentNode.Next
-		}
-		circularDoublyLinked.Head = nil
-		circularDoublyLinked.Tail = nil
-		circularDoublyLinked.Count = 0
 	}
+
+	current := list.Head
+	for {
+		next := current.Next
+
+		current.Previous = nil
+		current.Next = nil
+
+		if next == list.Head {
+			break
+		}
+		current = next
+	}
+
+	list.Head = nil
+	list.Tail = nil
+	list.Count = 0
 }
 
 func (circularDoublyLinked *CircularDoublyLinke) IsEmpty() bool {
@@ -219,7 +222,7 @@ func (circularDoublyLinked *CircularDoublyLinke) Display() {
 
 	current := circularDoublyLinked.Head
 	for {
-		fmt.Printf("%d ", current.Data)
+		fmt.Printf("%d\n ", current.Data)
 		current = current.Next
 		if current == circularDoublyLinked.Head {
 			break

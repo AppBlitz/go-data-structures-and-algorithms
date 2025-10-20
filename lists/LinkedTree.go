@@ -2,147 +2,123 @@ package lists
 
 import "fmt"
 
-// NodeTree represents a node within the binary tree.
+// NodeTree represents a single node in the binary tree.
 type NodeTree struct {
 	Data  int
 	Left  *NodeTree
 	Right *NodeTree
 }
 
-// Tree represents the main structure of a binary tree.
+// Tree represents a binary search tree.
 type Tree struct {
-	Raiz *NodeTree
+	Root *NodeTree
 }
 
-// NewArbol creates and returns a new empty tree.
-// Complexity: O(1)
-func NewArbol() *Tree {
-	return &Tree{Raiz: nil}
+// NewTree creates and returns an empty binary search tree.
+func NewTree() *Tree {
+	return &Tree{Root: nil}
 }
 
-// Search looks for a value in the tree and returns true if found.
-// Complexity: O(n)
-func (tree *Tree) Search(node *NodeTree, valor int) bool {
+// Insert inserts a new value into the binary search tree.
+func (t *Tree) Insert(value int) {
+	t.Root = insertRecursive(t.Root, value)
+}
+
+func insertRecursive(node *NodeTree, value int) *NodeTree {
+	if node == nil {
+		return &NodeTree{Data: value}
+	}
+	if value < node.Data {
+		node.Left = insertRecursive(node.Left, value)
+	} else if value > node.Data {
+		node.Right = insertRecursive(node.Right, value)
+	}
+	return node
+}
+
+// Search returns true if the given value exists in the tree.
+func (t *Tree) Search(value int) bool {
+	return searchRecursive(t.Root, value)
+}
+
+func searchRecursive(node *NodeTree, value int) bool {
 	if node == nil {
 		return false
 	}
-	if node.Data == valor {
+	if node.Data == value {
 		return true
-	} else if valor < node.Data {
-		return tree.Search(node.Left, valor)
-	} else {
-		return tree.Search(node.Right, valor)
+	} else if value < node.Data {
+		return searchRecursive(node.Left, value)
 	}
+	return searchRecursive(node.Right, value)
 }
 
-// InsertNode inserts a new node into the binary search tree.
-// Complexity: O(n)
-func (tree *Tree) InsertNode(node **NodeTree, valor int) {
-	if *node == nil {
-		*node = &NodeTree{Data: valor}
-		return
-	}
-	if valor < (*node).Data {
-		tree.InsertNode(&((*node).Left), valor)
-	} else if valor > (*node).Data {
-		tree.InsertNode(&((*node).Right), valor)
-	}
+// Delete removes a node with the specified value from the tree.
+func (t *Tree) Delete(value int) {
+	t.Root = deleteRecursive(t.Root, value)
 }
 
-// DeleteNode removes a specific node from the tree.
-// Complexity: O(n)
-func (tree *Tree) DeleteNode(node *NodeTree, valor int) *NodeTree {
+func deleteRecursive(node *NodeTree, value int) *NodeTree {
 	if node == nil {
 		return nil
 	}
 
-	if valor < node.Data {
-		node.Left = tree.DeleteNode(node.Left, valor)
-	} else if valor > node.Data {
-		node.Right = tree.DeleteNode(node.Right, valor)
+	if value < node.Data {
+		node.Left = deleteRecursive(node.Left, value)
+	} else if value > node.Data {
+		node.Right = deleteRecursive(node.Right, value)
 	} else {
+		// Node found
 		if node.Left == nil {
 			return node.Right
-		} else if node.Right == nil {
+		}
+		if node.Right == nil {
 			return node.Left
 		}
-		minimo := tree.FindMin(node.Right)
-		node.Data = minimo.Data
-		node.Right = tree.DeleteNode(node.Right, minimo.Data)
+
+		// Replace with the minimum node from the right subtree
+		minNode := findMin(node.Right)
+		node.Data = minNode.Data
+		node.Right = deleteRecursive(node.Right, minNode.Data)
 	}
 	return node
 }
 
-// DeleteSubTree removes an entire subtree starting from the given node.
-// Complexity: O(n)
-func (tree *Tree) DeleteSubTree(node *NodeTree) {
-	if node == nil {
-		return
-	}
-	tree.DeleteSubTree(node.Left)
-	tree.DeleteSubTree(node.Right)
-	node.Left = nil
-	node.Right = nil
+// FindMin returns the node with the minimum value in the tree.
+func (t *Tree) FindMin() *NodeTree {
+	return findMin(t.Root)
 }
 
-// FindMin searches and returns the node with the minimum value in the tree.
-// Complexity: O(h), worst case O(n)
-func (tree *Tree) FindMin(node *NodeTree) *NodeTree {
-	if node == nil {
-		return nil
-	}
-	if node.Left == nil {
+func findMin(node *NodeTree) *NodeTree {
+	if node == nil || node.Left == nil {
 		return node
 	}
-	return tree.FindMin(node.Left)
+	return findMin(node.Left)
 }
 
-// FindMax searches and returns the node with the maximum value in the tree.
-// Complexity: O(h), worst case O(n)
-func (tree *Tree) FindMax(node *NodeTree) *NodeTree {
-	if node == nil {
-		return nil
-	}
-	if node.Right == nil {
+// FindMax returns the node with the maximum value in the tree.
+func (t *Tree) FindMax() *NodeTree {
+	return findMax(t.Root)
+}
+
+func findMax(node *NodeTree) *NodeTree {
+	if node == nil || node.Right == nil {
 		return node
 	}
-	return tree.FindMax(node.Right)
+	return findMax(node.Right)
 }
 
-// DeleteMin removes the node with the minimum value from the tree.
-// Complexity: O(h), worst case O(n)
-func (tree *Tree) DeleteMin(node *NodeTree) *NodeTree {
-	if node == nil {
-		return nil
-	}
-	if node.Left == nil {
-		return node.Right
-	}
-	node.Left = tree.DeleteMin(node.Left)
-	return node
+// Height returns the height of the tree.
+func (t *Tree) Height() int {
+	return heightRecursive(t.Root)
 }
 
-// DeleteMax removes the node with the maximum value from the tree.
-// Complexity: O(h), worst case O(n)
-func (tree *Tree) DeleteMax(node *NodeTree) *NodeTree {
-	if node == nil {
-		return nil
-	}
-	if node.Right == nil {
-		return node.Left
-	}
-	node.Right = tree.DeleteMax(node.Right)
-	return node
-}
-
-// Height calculates and returns the height of the tree.
-// Complexity: O(n)
-func (tree *Tree) Height(node *NodeTree) int {
+func heightRecursive(node *NodeTree) int {
 	if node == nil {
 		return 0
 	}
-	left := tree.Height(node.Left)
-	right := tree.Height(node.Right)
+	left := heightRecursive(node.Left)
+	right := heightRecursive(node.Right)
 	if left > right {
 		return left + 1
 	}
@@ -150,49 +126,72 @@ func (tree *Tree) Height(node *NodeTree) int {
 }
 
 // CountNodes returns the total number of nodes in the tree.
-// Complexity: O(n)
-func (tree *Tree) CountNodes(node *NodeTree) int {
-	if node == nil {
-		return 0
-	}
-	return 1 + tree.CountNodes(node.Left) + tree.CountNodes(node.Right)
+func (t *Tree) CountNodes() int {
+	return countNodesRecursive(t.Root)
 }
 
-// Weight returns the sum of all values stored in the tree.
-// Complexity: O(n)
-func (tree *Tree) Weight(node *NodeTree) int {
+func countNodesRecursive(node *NodeTree) int {
 	if node == nil {
 		return 0
 	}
-	return node.Data + tree.Weight(node.Left) + tree.Weight(node.Right)
+	return 1 + countNodesRecursive(node.Left) + countNodesRecursive(node.Right)
+}
+
+// Sum returns the sum of all values in the tree.
+func (t *Tree) Sum() int {
+	return sumRecursive(t.Root)
+}
+
+func sumRecursive(node *NodeTree) int {
+	if node == nil {
+		return 0
+	}
+	return node.Data + sumRecursive(node.Left) + sumRecursive(node.Right)
+}
+
+// Clear removes all nodes from the tree.
+func (t *Tree) Clear() {
+	t.Root = nil
 }
 
 // PrintInorder prints the tree in inorder traversal (left, root, right).
-// Complexity: O(n)
-func (tree *Tree) PrintInorder(node *NodeTree) {
-	if node != nil {
-		tree.PrintInorder(node.Left)
-		fmt.Printf("%d ", node.Data)
-		tree.PrintInorder(node.Right)
-	}
+func (t *Tree) PrintInorder() {
+	printInorderRecursive(t.Root)
+	fmt.Println()
 }
 
-// PrintPostorder prints the tree in postorder traversal (left, right, root).
-// Complexity: O(n)
-func (tree *Tree) PrintPostorder(node *NodeTree) {
+func printInorderRecursive(node *NodeTree) {
 	if node != nil {
-		tree.PrintPostorder(node.Left)
-		tree.PrintPostorder(node.Right)
+		printInorderRecursive(node.Left)
 		fmt.Printf("%d ", node.Data)
+		printInorderRecursive(node.Right)
 	}
 }
 
 // PrintPreorder prints the tree in preorder traversal (root, left, right).
-// Complexity: O(n)
-func (tree *Tree) PrintPreorder(node *NodeTree) {
+func (t *Tree) PrintPreorder() {
+	printPreorderRecursive(t.Root)
+	fmt.Println()
+}
+
+func printPreorderRecursive(node *NodeTree) {
 	if node != nil {
 		fmt.Printf("%d ", node.Data)
-		tree.PrintPreorder(node.Left)
-		tree.PrintPreorder(node.Right)
+		printPreorderRecursive(node.Left)
+		printPreorderRecursive(node.Right)
+	}
+}
+
+// PrintPostorder prints the tree in postorder traversal (left, right, root).
+func (t *Tree) PrintPostorder() {
+	printPostorderRecursive(t.Root)
+	fmt.Println()
+}
+
+func printPostorderRecursive(node *NodeTree) {
+	if node != nil {
+		printPostorderRecursive(node.Left)
+		printPostorderRecursive(node.Right)
+		fmt.Printf("%d ", node.Data)
 	}
 }
